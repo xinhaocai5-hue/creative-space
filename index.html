@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创意空间 | Creative Space</title>
+  <meta name="description" content="创意空间 - 视觉至上 / visual first">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading">
+
+  <!-- LOADER -->
+  <div class="loader" id="loader">
+    <div class="loader-green"></div>
+    <div class="loader-black"></div>
+
+    <!-- Grid background -->
+    <div class="loader-grid"></div>
+
+    <!-- Floating decorations -->
+    <div class="loader-deco loader-deco-1">+</div>
+    <div class="loader-deco loader-deco-2">x</div>
+    <div class="loader-deco loader-deco-3">.</div>
+    <div class="loader-deco loader-deco-4">+</div>
+    <div class="loader-deco loader-deco-5">x</div>
+    <div class="loader-deco loader-deco-6">.</div>
+
+    <!-- Corner brackets -->
+    <div class="loader-bracket loader-bracket-tl"></div>
+    <div class="loader-bracket loader-bracket-tr"></div>
+    <div class="loader-bracket loader-bracket-bl"></div>
+    <div class="loader-bracket loader-bracket-br"></div>
+
+    <!-- Rotating rings -->
+    <div class="loader-ring"></div>
+    <div class="loader-ring loader-ring-2"></div>
+
+    <!-- Scanning line -->
+    <div class="loader-scan"></div>
+
+    <!-- Center content -->
+    <div class="loader-center">
+      <div class="loader-counter">
+        <span id="loaderNum">00</span><span class="loader-percent">%</span>
+      </div>
+      <div class="loader-label">
+        <span class="loader-label-line"></span>
+        <p class="loader-text" data-zh="加载中" data-en="LOADING">LOADING</p>
+        <span class="loader-label-line"></span>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="loader-bar"><div class="loader-bar-fill" id="loaderBarFill"></div></div>
+  </div>
+
+  <!-- NOISE -->
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- SVG FILTERS -->
+  <svg class="svg-filters" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <filter id="wave-distort">
+        <feTurbulence type="turbulence" baseFrequency="0 1" numOctaves="2" seed="0" stitchTiles="stitch" result="turbulence"/>
+        <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="wave-image">
+        <feTurbulence type="turbulence" baseFrequency="0 1" numOctaves="2" seed="63" stitchTiles="stitch" result="turbulence"/>
+        <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="13" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="grayscale">
+        <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
+      </filter>
+      <filter id="color-red">
+        <feColorMatrix type="matrix" values="0 0 0 0.9 0  0 0 0 0.1 0  0 0 0 0.1 0  0 0 0 1 0"/>
+      </filter>
+      <filter id="color-cyan">
+        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0.9 0  0 0 0 0.9 0  0 0 0 1 0"/>
+      </filter>
+      <filter id="color-accent">
+        <feColorMatrix type="matrix" values="0 0 0 0.77 0  0 0 0 1 0  0 0 0 0.23 0  0 0 0 1 0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- BG MESH -->
+  <div class="bg-mesh" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-mark">J</span>
+      <span class="nav-logo-text" data-zh="创意空间" data-en="creative space">创意空间</span>
+    </a>
+    <div class="nav-links" id="navLinks"></div>
+    <div class="nav-actions">
+      <button class="nav-pill" id="editToggle" aria-label="Toggle edit mode">
+        <span class="nav-pill-dot"></span>
+        <span data-zh="编辑" data-en="edit">编辑</span>
+      </button>
+      <button class="nav-pill" id="langToggle" aria-label="Toggle language">
+        <span data-zh="EN" data-en="中">EN</span>
+      </button>
+    </div>
+    <button class="nav-menu-btn" id="menuBtn" aria-label="menu">
+      <span class="menu-line menu-line-1"></span>
+      <span class="menu-line menu-line-2"></span>
+      <span class="menu-line menu-line-3"></span>
+    </button>
+  </nav>
+
+  <!-- FULLSCREEN MENU -->
+  <div class="menu-overlay" id="menuOverlay">
+    <div class="menu-bg">
+      <span class="menu-bg-letter">J</span>
+      <span class="menu-bg-letter">J</span>
+      <span class="menu-bg-letter">J</span>
+      <span class="menu-bg-letter">J</span>
+      <span class="menu-bg-letter">J</span>
+      <span class="menu-bg-letter">J</span>
+    </div>
+    <div class="menu-content">
+      <div class="menu-selections">
+        <a href="#hero" class="menu-item menu-item--active" data-zh="主页" data-en="home">
+          <span class="menu-item-num">01</span>
+          <span class="menu-item-text" data-zh="主页" data-en="home">主页</span>
+          <span class="menu-item-line"></span>
+        </a>
+        <a href="#skills" class="menu-item" data-zh="会做什么" data-en="skills">
+          <span class="menu-item-num">02</span>
+          <span class="menu-item-text" data-zh="会做什么" data-en="skills">会做什么</span>
+          <span class="menu-item-line"></span>
+        </a>
+        <a href="#illustrations" class="menu-item" data-zh="图片" data-en="photos">
+          <span class="menu-item-num">03</span>
+          <span class="menu-item-text" data-zh="图片" data-en="photos">图片</span>
+          <span class="menu-item-line"></span>
+        </a>
+        <a href="#videos" class="menu-item" data-zh="视频" data-en="videos">
+          <span class="menu-item-num">04</span>
+          <span class="menu-item-text" data-zh="视频" data-en="videos">视频</span>
+          <span class="menu-item-line"></span>
+        </a>
+        <a href="#software" class="menu-item" data-zh="软件" data-en="software">
+          <span class="menu-item-num">05</span>
+          <span class="menu-item-text" data-zh="软件" data-en="软件">软件</span>
+          <span class="menu-item-line"></span>
+        </a>
+        <a href="#contact" class="menu-item" data-zh="联系" data-en="contact">
+          <span class="menu-item-num">06</span>
+          <span class="menu-item-text" data-zh="联系" data-en="contact">联系</span>
+          <span class="menu-item-line"></span>
+        </a>
+      </div>
+      <div class="menu-contact">
+        <div class="menu-contact-item">
+          <span class="menu-contact-label">Email</span>
+          <span class="menu-contact-value">hello@jiejoe.com</span>
+        </div>
+        <div class="menu-contact-item">
+          <span class="menu-contact-label" data-zh="微信" data-en="WeChat">微信</span>
+          <span class="menu-contact-value">jiejoe_wechat</span>
+        </div>
+        <div class="menu-contact-item">
+          <span class="menu-contact-label">WhatsApp</span>
+          <span class="menu-contact-value">+86 1XX XXXX XXXX</span>
+        </div>
+      </div>
+      <div class="menu-links">
+        <a href="#" class="menu-link">Bilibili</a>
+        <a href="#" class="menu-link">Douyin</a>
+        <a href="#" class="menu-link">Kuaishou</a>
+        <a href="#" class="menu-link">Xiaohongshu</a>
+        <a href="#" class="menu-link">GitHub</a>
+        <a href="#" class="menu-link">Weibo</a>
+        <a href="#" class="menu-link">Twitter</a>
+        <a href="#" class="menu-link">Website</a>
+      </div>
+    </div>
+    <button class="menu-close" id="menuClose" aria-label="close">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main id="home">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <!-- Decorative background -->
+      <div class="hero-deco" aria-hidden="true">
+        <div class="hero-grid"></div>
+        <span class="hero-deco-shape hero-deco-cross" style="top:18%;left:12%"></span>
+        <span class="hero-deco-shape hero-deco-cross" style="top:72%;left:85%"></span>
+        <span class="hero-deco-shape hero-deco-cross" style="top:85%;left:18%"></span>
+        <span class="hero-deco-shape hero-deco-dot" style="top:25%;right:15%"></span>
+        <span class="hero-deco-shape hero-deco-dot" style="top:60%;left:8%"></span>
+        <span class="hero-deco-shape hero-deco-ring" style="top:15%;right:8%"></span>
+        <span class="hero-deco-shape hero-deco-ring" style="bottom:20%;left:10%"></span>
+        <span class="hero-deco-shape hero-deco-plus" style="top:40%;left:90%"></span>
+        <span class="hero-deco-shape hero-deco-plus" style="top:78%;right:30%"></span>
+        <span class="hero-deco-watermark">CREATIVE</span>
+      </div>
+      <div class="hero-stage">
+        <div class="hero-tag" data-reveal="fade-up">
+          <span class="hero-tag-dot"></span>
+          <span data-zh="创意 / 视频 / 软件" data-en="visual / video / software">创意 / 视频 / 软件</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="hero-line" data-reveal="title">
+            <span class="hero-line-inner">be wild!</span>
+          </span>
+          <span class="hero-line" data-reveal="title" data-delay="120">
+            <span class="hero-line-inner">creative!</span>
+          </span>
+          <span class="hero-line" data-reveal="title" data-delay="240">
+            <span class="hero-line-inner">and cool!</span>
+          </span>
+        </h1>
+        <div class="hero-foot" data-reveal="fade-up" data-delay="400">
+          <div class="hero-scroll-hint">
+            <span class="hero-scroll-line"></span>
+          </div>
+          <div class="hero-meta">
+            <span>01 / 06</span>
+            <span data-zh="视觉至上" data-en="visual first">视觉至上</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-side hero-side-left" aria-hidden="true">
+        <span data-zh="创意空间" data-en="creative space">创意空间</span>
+      </div>
+      <div class="hero-side hero-side-right" aria-hidden="true">
+        <span>&copy; 2026 / 视觉至上</span>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-ring" style="top:10%;right:5%"></span>
+        <span class="deco-shape deco-cross" style="bottom:15%;right:12%"></span>
+        <span class="deco-shape deco-dot" style="top:40%;right:8%"></span>
+        <span class="deco-watermark">ABOUT</span>
+      </div>
+      <div class="section-wrap">
+        <div class="section-head">
+          <div class="section-num" data-reveal="fade-up">/ 01</div>
+          <h2 class="section-h" data-reveal="title-mini">
+            <span class="section-h-en">ABOUT ME</span>
+            <span class="section-h-zh">关于我</span>
+          </h2>
+          <div class="section-line" data-reveal="scale-x"></div>
+        </div>
+        <div class="about-grid">
+          <div class="about-portrait" data-reveal="slide-right">
+            <div class="portrait-frame">
+              <div class="portrait-img">
+                <img class="portrait-photo" alt="portrait" style="display:none">
+                <div class="portrait-placeholder" data-zh="人像照片" data-en="portrait">人像照片</div>
+              </div>
+              <div class="portrait-tape portrait-tape-1"></div>
+              <div class="portrait-tape portrait-tape-2"></div>
+              <div class="portrait-corner portrait-corner-tl"></div>
+              <div class="portrait-corner portrait-corner-br"></div>
+              <button class="portrait-edit-btn" id="aboutEditBtn" aria-label="Edit portrait" style="display:none">E</button>
+            </div>
+            <div class="portrait-label" data-zh="CREATIVE SPACE" data-en="CREATIVE SPACE">CREATIVE SPACE</div>
+          </div>
+          <div class="about-text" data-reveal="fade-up">
+            <p class="about-hi" id="aboutLine1" data-zh="你好,这里是创意空间," data-en="hello, this is creative space,">你好,这里是创意空间,</p>
+            <p class="about-hi" id="aboutLine2" data-zh="用 AI 创作图片、视频、音频和软件" data-en="creating images, videos, audio and software with AI">用 AI 创作图片、视频、音频和软件</p>
+            <p class="about-hi about-hi-accent" id="aboutLine3" data-zh="让我们用AI做点cool的事" data-en="let's make something cool with AI">让我们用AI做点cool的事</p>
+            <div class="about-tags">
+              <span class="about-tag" data-zh="AI 绘画 / 视频 / 音频" data-en="AI art / video / audio">AI 绘画 / 视频 / 音频</span>
+              <span class="about-tag" data-zh="自媒体运营" data-en="content creator">自媒体运营</span>
+              <span class="about-tag" data-zh="独立软件开发" data-en="indie developer">独立软件开发</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="skills" id="skills" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-plus" style="top:20%;left:5%"></span>
+        <span class="deco-shape deco-dot" style="bottom:25%;left:10%"></span>
+        <span class="deco-shape deco-ring" style="top:60%;right:6%"></span>
+        <span class="deco-watermark">SKILLS</span>
+      </div>
+      <div class="section-wrap">
+        <div class="section-head">
+          <div class="section-num" data-reveal="fade-up">/ 02</div>
+          <h2 class="section-h" data-reveal="title-mini">
+            <span class="section-h-en">WHAT SKILLS DO I HAVE</span>
+            <span class="section-h-zh">会做什么</span>
+          </h2>
+          <div class="section-line" data-reveal="scale-x"></div>
+        </div>
+        <div class="skills-text" data-reveal="fade-up">
+          <p class="skills-paragraph skill-lang-zh">
+            平时本地跑 <span class="kw">ComfyUI</span> 瞎画点东西，
+            也用 <span class="kw">AI</span> 生成些短片和翻唱，
+            让 AI 唱歌挺有意思的。
+            做完就剪，<span class="kw">剪映</span> 简单剪剪，
+            偶尔用 <span class="kw">Blender</span> 搞搞 <span class="kw">MMD</span>，
+            然后发到 <span class="kw">抖音</span> 和 <span class="kw">快手</span>，
+            慢慢攒了 <span class="kw">1 万多</span> 粉丝。
+            另外 <span class="kw">vibe coding</span> 写了几个小软件，
+            纯粹玩着学的。
+          </p>
+          <p class="skills-paragraph skill-lang-en">
+            Mostly running <span class="kw">ComfyUI</span> locally to doodle stuff,
+            also making <span class="kw">AI</span> short videos and covers —
+            getting AI to sing is pretty fun.
+            Then I edit, simple cuts in <span class="kw">CapCut</span>,
+            sometimes <span class="kw">Blender</span> for <span class="kw">MMD</span>,
+            post to <span class="kw">Douyin</span> and <span class="kw">Kuaishou</span>,
+            slowly racked up <span class="kw">10k+</span> followers.
+            Also <span class="kw">vibe coding</span> a few small apps,
+            just for fun really.
+          </p>
+          <div class="skills-tags">
+            <span class="skill-tag">ComfyUI</span>
+            <span class="skill-tag">AI 视频</span>
+            <span class="skill-tag">AI 翻唱</span>
+            <span class="skill-tag">剪映</span>
+            <span class="skill-tag">Blender</span>
+            <span class="skill-tag">MMD</span>
+            <span class="skill-tag">抖音 / 快手</span>
+            <span class="skill-tag">1 万+ 粉丝</span>
+            <span class="skill-tag">vibe coding</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATEMENT -->
+    <section class="statement" data-reveal-section>
+      <canvas id="ideaCanvas" aria-hidden="true"></canvas>
+      <div class="statement-inner">
+        <div class="statement-item" data-reveal="word">
+          <span class="statement-en">FULL OF CREATIVITY</span>
+          <span class="statement-zh">满脑子创意</span>
+        </div>
+        <div class="statement-item" data-reveal="word" data-delay="120">
+          <span class="statement-en">DARE TO IMAGINE</span>
+          <span class="statement-zh">敢想</span>
+        </div>
+        <div class="statement-item statement-item-accent" data-reveal="word" data-delay="240">
+          <span class="statement-en">READY TO CREATE</span>
+          <span class="statement-zh">准备创作</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISION MARQUEE -->
+    <section class="vision" aria-hidden="true">
+      <div class="vision-track">
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+        <span class="vision-item" data-zh="视觉至上" data-en="visual first">视觉至上</span><span class="vision-dot"></span>
+        <span class="vision-item">visual first</span><span class="vision-dot"></span>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO TITLE -->
+    <section class="ptitle" data-reveal-section>
+      <h2 class="ptitle-text image-wave">portfolio</h2>
+    </section>
+
+    <!-- ILLUSTRATIONS -->
+    <section class="works works-illust" id="illustrations" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-cross" style="top:8%;left:8%"></span>
+        <span class="deco-shape deco-dot" style="top:30%;right:5%"></span>
+        <span class="deco-watermark">ART</span>
+      </div>
+      <div class="section-wrap">
+        <div class="section-head">
+          <div class="section-num" data-reveal="fade-up">/ 03</div>
+          <h2 class="section-h" data-reveal="title-mini">
+            <span class="section-h-en">ART</span>
+            <span class="section-h-zh">艺术插画</span>
+          </h2>
+          <div class="section-line" data-reveal="scale-x"></div>
+          <button class="view-more view-more-inline" id="illustViewMore" data-zh="查看全部" data-en="view all" aria-label="View all illustrations">查看全部</button>
+        </div>
+      </div>
+      <div class="illust-marquee" id="illustMarquee">
+        <div class="illust-track-row illust-track-top">
+          <div class="track-grid"></div>
+          <div class="illust-track-inner" id="illustTrackTop"></div>
+        </div>
+        <div class="illust-track-row illust-track-bottom">
+          <div class="track-grid"></div>
+          <div class="illust-track-inner" id="illustTrackBottom"></div>
+        </div>
+        <div class="illust-marquee-fade illust-marquee-fade-left"></div>
+        <div class="illust-marquee-fade illust-marquee-fade-right"></div>
+      </div>
+    </section>
+
+    <!-- VIDEOS -->
+    <section class="works works-video" id="videos" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-ring" style="top:15%;right:8%"></span>
+        <span class="deco-shape deco-plus" style="bottom:20%;left:6%"></span>
+        <span class="deco-watermark">VIDEO</span>
+      </div>
+      <div class="section-wrap">
+        <div class="section-head">
+          <div class="section-num" data-reveal="fade-up">/ 04</div>
+          <h2 class="section-h" data-reveal="title-mini">
+            <span class="section-h-en">VIDEOS</span>
+            <span class="section-h-zh">创意视频</span>
+          </h2>
+          <div class="section-line" data-reveal="scale-x"></div>
+          <button class="view-more view-more-inline" id="videoViewMore" data-zh="查看全部" data-en="view all" aria-label="View all videos">查看全部</button>
+        </div>
+        <div class="video-list" id="videoList"></div>
+        <div class="video-more" id="videoMore" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- SOFTWARE -->
+    <section class="works works-soft" id="software" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-cross" style="top:12%;right:10%"></span>
+        <span class="deco-shape deco-dot" style="bottom:30%;right:5%"></span>
+        <span class="deco-shape deco-ring" style="top:50%;left:4%"></span>
+        <span class="deco-watermark">CODE</span>
+      </div>
+      <div class="section-wrap">
+        <div class="section-head">
+          <div class="section-num" data-reveal="fade-up">/ 05</div>
+          <h2 class="section-h" data-reveal="title-mini">
+            <span class="section-h-en">SOFTWARE</span>
+            <span class="section-h-zh">原创软件</span>
+          </h2>
+          <div class="section-line" data-reveal="scale-x"></div>
+          <button class="view-more view-more-inline" id="softViewMore" data-zh="查看全部" data-en="view all" aria-label="View all software">查看全部</button>
+        </div>
+        <div class="soft-grid" id="softGrid"></div>
+        <div class="soft-more" id="softMore" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact" id="contact" data-reveal-section>
+      <div class="section-deco" aria-hidden="true">
+        <span class="deco-shape deco-cross" style="top:15%;left:8%"></span>
+        <span class="deco-shape deco-dot" style="top:25%;right:10%"></span>
+        <span class="deco-shape deco-ring" style="bottom:20%;right:8%"></span>
+        <span class="deco-shape deco-plus" style="bottom:35%;left:12%"></span>
+        <span class="deco-watermark">CONTACT</span>
+      </div>
+      <div class="section-wrap">
+        <h2 class="contact-title" data-reveal="title-big">
+          <span class="contact-title-en">CONTACT ME</span>
+          <span class="contact-title-zh">联系我</span>
+        </h2>
+        <div class="contact-links" id="socialGrid"></div>
+        <div class="contact-footer">
+          <span class="contact-footer-line"></span>
+          <p class="contact-footer-text" data-zh="随时找我玩" data-en="always open to collab">随时找我玩</p>
+          <span class="contact-footer-line"></span>
+        </div>
+      </div>
+    </section>
+
+  <!-- PHOTOS PAGE -->
+  <section id="photosPage">
+    <canvas class="photos_photobox"></canvas>
+    <div class="photos_checkbox" style="visibility:hidden">
+      <div class="photos_checkbox_line photos_checkbox_line_after photos_checkbox_mover"></div>
+      <div class="photos_checkbox_line photos_checkbox_line_front photos_checkbox_mover"></div>
+      <img class="photos_checkbox_img photos_checkbox_mover" alt="checkbox">
+      <div class="photos_checkbox_content">
+        <p class="pcc_name"></p>
+        <p class="pcc_time"></p>
+      </div>
+    </div>
+
+    <div class="photos_mousetip">
+      <svg class="photos_mousetip_icon" viewBox="0 0 200 200">
+        <line x1="53.1" y1="53.1" x2="146.9" y2="146.9"></line>
+        <line x1="53.1" y1="146.9" x2="146.9" y2="53.1"></line>
+        <polyline points="121.2,53.1 146.9,53.1 146.9,78.8"></polyline>
+        <polyline points="78.8,146.9 53.1,146.9 53.1,121.2"></polyline>
+      </svg>
+    </div>
+  </section>
+
+  <!-- VIDEOS PAGE -->
+  <section class="videos-page" id="videosPage">
+    <div class="vp-header">
+      <h2 class="vp-title image-wave" data-reveal="title">videos</h2>
+      <div class="vp-count" id="vpCount">0</div>
+      <div class="vp-types" id="vpTypes"></div>
+    </div>
+    <div class="vp-grid" id="vpGrid"></div>
+    <button class="vp-back" id="vpBack" data-zh="返回" data-en="back" aria-label="Back to main page">返回</button>
+  </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <span class="footer-logo">J</span>
+        <span data-zh="创意空间" data-en="creative space">创意空间</span>
+      </div>
+      <div class="footer-col">
+        <span data-zh="视觉至上" data-en="visual first">视觉至上</span>
+      </div>
+      <div class="footer-col">
+        <span>&copy; 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- EDIT MODAL -->
+  <div class="modal" id="editModal">
+    <div class="modal-backdrop" id="editModalBackdrop"></div>
+    <div class="modal-panel modal-panel-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" data-zh="编辑内容" data-en="Edit Content">编辑内容</h3>
+        <div class="modal-header-actions">
+          <button class="modal-icon-btn" id="editExportBtn" aria-label="Export" data-zh="导出" data-en="Export">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="modal-icon-btn" id="editImportBtn" aria-label="Import" data-zh="导入" data-en="Import">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
+          <input type="file" id="editImportFile" accept=".json" hidden>
+        </div>
+        <button class="modal-close" id="editModalClose" aria-label="close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="edit-tabs" id="editTabs">
+        <button class="edit-tab active" data-tab="illust" data-zh="插画" data-en="Illustrations">插画</button>
+        <button class="edit-tab" data-tab="video" data-zh="视频" data-en="Videos">视频</button>
+        <button class="edit-tab" data-tab="software" data-zh="软件" data-en="Software">软件</button>
+        <button class="edit-tab" data-tab="social" data-zh="社交" data-en="Social">社交</button>
+        <button class="edit-tab" data-tab="about" data-zh="关于" data-en="About">关于</button>
+      </div>
+      <div class="modal-body">
+        <!-- Item list with drag reorder -->
+        <div class="edit-list" id="editList"></div>
+        <!-- Add new item form -->
+        <div class="edit-form-wrap" id="editFormWrap">
+          <form id="editForm" class="edit-form">
+            <div class="form-group">
+              <label class="form-label" data-zh="标题" data-en="Title">标题</label>
+              <input class="form-input" id="editTitle" type="text" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-zh="描述" data-en="Description">描述</label>
+              <textarea class="form-textarea" id="editDesc" rows="3"></textarea>
+            </div>
+            <div class="form-group" id="editImageGroup">
+              <label class="form-label" data-zh="图片/封面" data-en="Image/Cover">图片/封面</label>
+              <div class="form-file-row">
+                <input class="form-input" id="editImage" type="text" placeholder="URL">
+                <label class="form-file-btn" data-zh="上传" data-en="Upload">
+                  <input type="file" id="editImageFile" accept="image/*" hidden>
+                </label>
+              </div>
+            </div>
+            <div class="form-group" id="editLinkGroup">
+              <label class="form-label" data-zh="链接URL" data-en="Link URL">链接URL</label>
+              <input class="form-input" id="editLink" type="text">
+            </div>
+            <div class="form-group" id="editVideoUrlGroup" style="display:none">
+              <label class="form-label" data-zh="视频URL" data-en="Video URL">视频URL</label>
+              <input class="form-input" id="editVideoUrl" type="text" placeholder="Bilibili embed or direct link">
+            </div>
+            <div class="form-group" id="editVideoFileGroup" style="display:none">
+              <label class="form-label" data-zh="视频文件" data-en="Video File">视频文件</label>
+              <div class="form-file-row">
+                <input class="form-input" id="editVideoFilePath" type="text" placeholder="Path or URL">
+                <label class="form-file-btn" data-zh="上传" data-en="Upload">
+                  <input type="file" id="editVideoFile" accept="video/*" hidden>
+                </label>
+              </div>
+            </div>
+            <div class="form-group" id="editSoftFileGroup" style="display:none">
+              <label class="form-label" data-zh="软件文件" data-en="Software File">软件文件</label>
+              <div class="form-file-row">
+                <input class="form-input" id="editSoftFilePath" type="text" placeholder="Path or URL">
+                <label class="form-file-btn" data-zh="上传" data-en="Upload">
+                  <input type="file" id="editSoftFile" accept=".html,.htm" hidden>
+                </label>
+              </div>
+            </div>
+            <div class="form-group" id="editSocialFields" style="display:none">
+              <label class="form-label" data-zh="英文名" data-en="English Name">英文名</label>
+              <input class="form-input" id="editSocialHandle" type="text">
+              <label class="form-label" style="margin-top:8px" data-zh="图标类型 (bilibili/douyin/kuaishou/xiaohongshu/github)" data-en="Icon Type (bilibili/douyin/kuaishou/xiaohongshu/github)">图标类型</label>
+              <input class="form-input" id="editSocialIcon" type="text">
+              <label class="form-label" style="margin-top:8px" data-zh="链接" data-en="URL">链接</label>
+              <input class="form-input" id="editSocialUrl" type="text">
+            </div>
+            <div class="form-group" id="editTagGroup">
+              <label class="form-label" data-zh="标签" data-en="Tag">标签</label>
+              <input class="form-input" id="editTag" type="text">
+            </div>
+            <input type="hidden" id="editId">
+            <input type="hidden" id="editType" value="illust">
+            <div class="form-actions">
+              <button type="submit" class="form-btn form-btn-primary" data-zh="保存" data-en="Save">保存</button>
+              <button type="button" class="form-btn form-btn-delete" id="editDelete" data-zh="删除" data-en="Delete">删除</button>
+              <button type="button" class="form-btn form-btn-cancel" id="editCancel" data-zh="取消" data-en="Cancel">取消</button>
+            </div>
+          </form>
+        </div>
+        <!-- Delete confirmation -->
+        <div class="edit-confirm" id="editConfirm" style="display:none">
+          <p class="edit-confirm-text" data-zh="确定要删除这个项目吗？" data-en="Are you sure you want to delete this item?">确定要删除这个项目吗？</p>
+          <div class="edit-confirm-actions">
+            <button class="form-btn form-btn-delete" id="editConfirmYes" data-zh="确认删除" data-en="Confirm Delete">确认删除</button>
+            <button class="form-btn form-btn-cancel" id="editConfirmNo" data-zh="取消" data-en="Cancel">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD MODAL -->
+  <div class="modal" id="passwordModal">
+    <div class="modal-backdrop" id="passwordModalBackdrop"></div>
+    <div class="modal-panel modal-panel-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" data-zh="输入密码" data-en="Enter Password">输入密码</h3>
+        <button class="modal-close" id="passwordModalClose" aria-label="close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="passwordForm" class="edit-form">
+          <div class="form-group">
+            <label class="form-label" data-zh="密码" data-en="Password">密码</label>
+            <input class="form-input" id="passwordInput" type="password" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="form-btn form-btn-primary" data-zh="确认" data-en="Confirm">确认</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+    <button class="lightbox-close" id="lightboxClose" aria-label="close">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="lightbox-body" id="lightboxBody"></div>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="previous">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="next">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- PAGE TRANSITION -->
+  <div class="page-transition" id="pageTransition" aria-hidden="true">
+    <div class="page-transition-block page-transition-block-1"></div>
+    <div class="page-transition-block page-transition-block-2"></div>
+  </div>
+
+  <button class="photos-back" id="photosBack" aria-label="Back">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <span data-zh="返回" data-en="back">返回</span>
+  </button>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
